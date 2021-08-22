@@ -1,0 +1,41 @@
+-----------------------------------------------------------------------------------
+------------------------ Pieces of Code for Reference -----------------------------
+
+* API Calls through pure JS
+  In the page view:
+    - import { tester } from '../grabber/test'
+  In the test.js
+    export const tester = async () => {
+      return "http://localhost:5000/realmedia";
+    }
+
+----------------------------------------------------------------------------------
+
+* API Calls through PageView getServerSideProps
+  In the Page.js
+    function HomePage({ data }) {
+      return (
+        <div>Welcome
+        <p> Test data {data.height}</p>
+        </div>
+      )
+    }
+
+    export async function getServerSideProps(context) {
+      const res = await fetch(`http://localhost:5000/media`);
+      const data = await res.json();
+
+      if (!data) {
+        return {
+          notFound: true,
+        }
+      }
+
+      return {
+        props: { data },
+      }
+    }
+
+    export default HomePage
+
+----------------------------------------------------------------------------------
