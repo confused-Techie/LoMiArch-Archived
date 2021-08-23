@@ -8,18 +8,18 @@ export async function getServerSideProps(context) {
 
   var curPage = determinePage(place);
 
-  const res = await fetch(`http://localhost:5000/gallery/${item}?page=${curPage}`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/gallery/${item}?page=${curPage}`);
   const apiDataCur = await res.json();
 
   var apiDataLast = "";
   if (curPage != 1) {
     var lastPage = parseInt(curPage)-1;
-    const resLast = await fetch(`http://localhost:5000/gallery/${item}?page=${lastPage}`);
+    const resLast = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/gallery/${item}?page=${lastPage}`);
     apiDataLast = await resLast.json();
   }
 
   var nextPage = parseInt(curPage)+1;
-  const resNext = await fetch(`http://localhost:5000/gallery/${item}?page=${nextPage}`);
+  const resNext = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/gallery/${item}?page=${nextPage}`);
     const apiDataNext = await resNext.json();
 
   return { props: { apiDataCur, apiDataLast, apiDataNext } };
@@ -91,24 +91,24 @@ const Media = ( { apiDataCur, apiDataLast, apiDataNext }) => {
       <div className="wrapper">
 
         <Link href={`/gallery/${item}`} scroll={false}>
-        <span className="navClose">
-          &times;
-        </span>
+          <span className="navClose">
+            &times;
+          </span>
         </Link>
 
         <Link href={lastStatus ? `/media/${item}?place=${parseInt(place)-1}&uuid=${lastHref}` : '#'}>
-        <span className={lastStatus ? 'navigation prev' : 'navigation prev disabled'}>
-          &#10094;
-        </span>
+          <span className={lastStatus ? 'navigation prev' : 'navigation prev disabled'}>
+            &#10094;
+          </span>
         </Link>
 
         <Link href={nextStatus ? `/media/${item}?place=${parseInt(place)+1}&uuid=${nextHref}` : '#'}>
-        <span className={nextStatus ? 'navigation next' : 'navigation next disabled'}>
-          &#10095;
-        </span>
+          <span className={nextStatus ? 'navigation next' : 'navigation next disabled'}>
+            &#10095;
+          </span>
         </Link>
         <div className="content">
-          <img className="image" src={`http://localhost:5000${uuid}`} alt="" />
+          <img className="image" src={`${process.env.NEXT_PUBLIC_API_HOST}${uuid}`} alt="" />
         </div>
       </div>
     </>

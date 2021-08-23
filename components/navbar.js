@@ -1,11 +1,34 @@
-import { Header, Avatar, Dropdown } from '@primer/components'
+import { Header, Avatar, Dropdown, useTheme } from '@primer/components'
 
 function Navbar() {
+
+  const { setColorMode, resolvedColorMode } = useTheme();
+  // setColorMode: Allows changes of the current ColorMode
+  // resolvedColorMode: is the currently used ColorMode [ night, day, auto]
+  // colorMode: seems to mirror resolvedColorMode
+  // colorScheme: is the currently used ColorScheme [ light, dark, dark_dimmed ]
+  // nightScheme: The colorScheme used when ColorMode == night
+  // dayScheme: The ColorScheme used when ColorMode == day
+  console.log(useTheme());
+
+  const setDarkMode = () => {
+    if (resolvedColorMode != 'night') {
+      setColorMode('night');
+    }
+
+  }
+
+  function setLightMode() {
+    if (resolvedColorMode != 'day') {
+      setColorMode('day');
+    }
+  }
+
   return (
     <>
       <Header>
         <Header.Item>
-          <Header.Link href="#" fontSize={2}>
+          <Header.Link href="/" fontSize={2}>
             <span>LoMiArch</span>
           </Header.Link>
         </Header.Item>
@@ -13,13 +36,27 @@ function Navbar() {
           <Header.Link href="/">Dashboard</Header.Link>
         </Header.Item>
         <Header.Item>
-          <Header.Link href="#">Albums</Header.Link>
+          <Header.Link href="/albums">Albums</Header.Link>
         </Header.Item>
         <Header.Item>
           <Header.Link href="/gallery/default">Gallery</Header.Link>
         </Header.Item>
         <Header.Item full={true}>
-          <Header.Link href="#">Tools</Header.Link>
+          <Header.Link href="/tools">Tools</Header.Link>
+        </Header.Item>
+        <Header.Item>
+          <Header.Link href="/about">About</Header.Link>
+        </Header.Item>
+        <Header.Item>
+          <Dropdown>
+            <Dropdown.Button>
+              <span>Theme</span>
+            </Dropdown.Button>
+            <Dropdown.Menu direction="sw">
+              <Dropdown.Item onClick={setDarkMode}>Dark Mode</Dropdown.Item>
+              <Dropdown.Item onClick={setLightMode}>Light Mode</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
         </Header.Item>
         <Header.Item mr={0}>
           <Dropdown>

@@ -10,7 +10,7 @@ export async function getServerSideProps(context) {
   const { id } = context.query;
 
   // this serves as the init query to the db for retreiving data.
-  const res = await fetch('http://localhost:5000/gallery/'+id+'?page=1');
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/gallery/${id}?page=1`);
   const data = await res.json();
   const trunData = data.media;
   return { props: { trunData} };
@@ -31,7 +31,7 @@ const Gallery = ( { trunData } ) => {
 
     setPage(page + 1);
     console.log("page: "+page);
-    fetch('http://localhost:5000/gallery/'+id+'?page='+page)
+    fetch(`${process.env.NEXT_PUBLIC_API_HOST}/gallery/${id}?page=${page}`)
       .then(response => response.json())
       .then(data => {
         setItems( items.concat(data.media));
@@ -60,7 +60,7 @@ const Gallery = ( { trunData } ) => {
 
                 <Link href={`/media/${id}?place=${index}&uuid=${i.link}`}>
                   <div style={{ position: 'relative', width: '100%', height: '400px'}} >
-                    <Image src={`http://localhost:5000${i.link}`} alt="Testing picture"  layout={"fill"} objectFit={"cover"} unoptimized={"true"}/>
+                    <Image src={`${process.env.NEXT_PUBLIC_API_HOST}${i.link}`} alt="Testing picture"  layout={"fill"} objectFit={"cover"} unoptimized={"true"}/>
                   </div>
                 </Link>
 
