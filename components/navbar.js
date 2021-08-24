@@ -1,4 +1,5 @@
 import { Header, Avatar, Dropdown, useTheme } from '@primer/components'
+import { useEffect, useState } from "react";
 
 function Navbar() {
 
@@ -9,20 +10,27 @@ function Navbar() {
   // colorScheme: is the currently used ColorScheme [ light, dark, dark_dimmed ]
   // nightScheme: The colorScheme used when ColorMode == night
   // dayScheme: The ColorScheme used when ColorMode == day
-  console.log(useTheme());
 
-  const setDarkMode = () => {
-    if (resolvedColorMode != 'night') {
-      setColorMode('night');
-    }
+  const [ cookieTheme, setCookieTheme ] = useState('day');
 
+  useEffect(() => {
+    const tempTheme = localStorage.getItem("theme") || 'day'
+    setCookieTheme(tempTheme)
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("theme", cookieTheme);
+    setColorMode(cookieTheme);
+  }, [cookieTheme])
+
+  function setDarkMode() {
+    setCookieTheme('night');
   }
 
   function setLightMode() {
-    if (resolvedColorMode != 'day') {
-      setColorMode('day');
-    }
+    setCookieTheme('day');
   }
+
 
   return (
     <>

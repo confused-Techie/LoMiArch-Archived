@@ -1,6 +1,9 @@
-import { Box, Flex, ThemeProvider, theme, themeGet } from '@primer/components'
+import { Flex, ThemeProvider, theme, themeGet } from '@primer/components'
 import deepmerge from 'deepmerge';
 import Navbar from './navbar'
+
+import { GlobalStyles } from '../css/global';
+
 
 export default function Layout({ children }) {
   // ThemeProvider: colorMode:[ day (default), night, auto (Changes with system clock)]
@@ -18,13 +21,18 @@ export default function Layout({ children }) {
         }
       },
       // Adding a custom scheme
-
+      lomiarchDark: {
+        colors: {
+          primary: '#30363d'
+        }
+      }
     }
   });
 
   return (
     <>
-      <ThemeProvider theme={customTheme} colorMode="night" dayScheme="light" nightScheme="dark">
+      <ThemeProvider theme={customTheme} dayScheme="light" nightScheme="dark" colorMode='day'>
+        <GlobalStyles />
         <Navbar />
         <main>{children}</main>
       </ThemeProvider>

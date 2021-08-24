@@ -8,7 +8,7 @@ function HomePage() {
     <>
       <Layout>
         <div class="dashboard_main">
-          <TextInput width={1/2} variant="large" icon={SearchIcon} aria-label="Image-Search" name="Image-Search" placeholder="Search" autoComplete="postal-code" />
+          <TextInput width={1/2} variant="large" icon={SearchIcon} aria-label="Image-Search" name="Image-Search" placeholder="Search" />
         </div>
         <div class="dashboard_tag">
           <LabelGroup>

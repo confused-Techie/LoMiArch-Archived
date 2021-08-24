@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from "react";
+import { logging } from '../../components/logger';
 
 export async function getServerSideProps(context) {
   const { item, place } = context.query;
@@ -35,7 +36,7 @@ const Media = ( { apiDataCur, apiDataLast, apiDataNext }) => {
   const aPress = useKeyPress("a");
   const escPress = useKeyPress("Escape");
 
-  console.log(`arrowRight: ${arrowRightPress} || arrowLeft: ${arrowLeftPress} || dPress: ${dPress} || aPress = ${aPress} || escPress = ${escPress}`);
+  logging('media', `arrowRight: ${arrowRightPress} || arrowLeft: ${arrowLeftPress} || dPress: ${dPress} || aPress = ${aPress} || escPress = ${escPress}`);
 
   var currentPage = determinePage(place);
 
@@ -47,44 +48,44 @@ const Media = ( { apiDataCur, apiDataLast, apiDataNext }) => {
   try {
     if (nextHref == "false") {
       nextStatus = false;
-      console.log(`Media:: Set nextStatus: ${nextStatus}`);
+      logging('media', `Set nextStatus: ${nextStatus}`);
     }
   } catch(ex) {
-    console.log(`Media:: Failed to check or set nextHref/nextStatus: ${ex}`);
+    logging('media', `Failed to check or set nextHref/nextStatus: ${ex}`);
   }
   try {
     if (lastHref == "false") {
       lastStatus = false;
-      console.log(`Media:: Set lastStatus: ${lastStatus}`);
+      logging('media', `Set lastStatus: ${lastStatus}`);
     }
   } catch(ex) {
-    console.log(`Media:: Failed to check or set lastHref/lastStatus: ${ex}`);
+    logging('media', `Failed to check or set lastHref/lastStatus: ${ex}`);
   }
 
   if (escPress) {
-    console.log("Media:: Attempting to Respond to Escape...");
+    logging('media', "Attempting to Respond to Escape...");
     try {
       router.push(`/gallery/${item}`);
       // router.push is used here and only here because it seems the dynamic route wasn't loading properly to another directory page
       // And using it elsewhere causes pages to rapidly move foreward for as long as the button is pushed rather than just once
     } catch(ex) {
-      console.log(`Media:: Escaping Failed: ${ex}`);
+      logging('media', `Escaping Failed: ${ex}`);
     }
   }
   if (arrowRightPress || dPress) {
     if (nextStatus) {
-      console.log("Media:: Attempting to Respond to ArrowRight/KeyD...");
+      logging('media', "Attempting to Respond to ArrowRight/KeyD...");
       window.location.assign(`/media/${item}?place=${parseInt(place)+1}&uuid=${nextHref}`);
     }
   }
   if (arrowLeftPress || aPress) {
     if (lastStatus) {
-      console.log("Media:: Attempting to Respond to ArrowLeft/KeyA...");
+      logging('media', "Attempting to Respond to ArrowLeft/KeyA...");
       window.location.assign(`/media/${item}/?place=${parseInt(place)-1}&uuid=${lastHref}`);
     }
   }
 
-  console.log(`Item: ${item} || Place: ${place} || Page: ${currentPage} || UUID: ${uuid}`);
+  logging('media', `Item: ${item} || Place: ${place} || Page: ${currentPage} || UUID: ${uuid}`);
 
   return (
     <>
@@ -121,17 +122,17 @@ function determinePage(place) {
   var returnedPerPage = 10;
   if (place == 0) {
     // page is 1
-    console.log("Determine Page:: Place is lowest value. Defaulting to Page 1");
+    logging('determinePage', "Place is lowest value. Defaulting to Page 1");
     return 1;
   }  else {
-    console.log(`Determine Page:: Math Page Result: ${Math.ceil((parseInt(place) + 1) / returnedPerPage)}`);
+    logging('determinePage', `Math Page Result: ${Math.ceil((parseInt(place) + 1) / returnedPerPage)}`);
     return Math.ceil((parseInt(place) + 1) / returnedPerPage);
   }
 }
 
 function returnLastImage(place, uuid, list, listLast) {
   if (parseInt(place) != 0) {
-    console.log("returnLastImage:: Within Bounds...");
+    logging('returnlastimage', "Within Bounds...");
 
     try {
       var tempLinkList = [];
@@ -139,34 +140,34 @@ function returnLastImage(place, uuid, list, listLast) {
         tempLinkList.push(list.media[index].link);
       });
       var curIndex = tempLinkList.findIndex(item => item === uuid);
-      console.log(`returnLastImage:: curIndex: ${curIndex}`);
+      logging('returnlastimage', `curIndex: ${curIndex}`);
       // The above returns the current index location we are in.
 
       if (curIndex == 0) {
         // This means that we need to use the listLast
-        console.log("returnLastImage:: First Position: Use listLast...");
+        logging('returnlastimage', "First Position: Use listLast...");
         let last = listLast.media[listLast.media.length - 1].link;
-        console.log(`returnLastImage:: Last declared: ${last}`);
+        logging('returnlastimage', `Last declared: ${last}`);
         return last;
       } else {
-        console.log("returnLastImage:: Within Index Bounds...");
+        logging('returnlastimage', "Within Index Bounds...");
         let last = list.media[ curIndex - 1].link;
-        console.log(`returnLastImage:: Last declared: ${last}`);
+        logging('returnlastimage', `Last declared: ${last}`);
         return last;
       }
 
     } catch(ex) {
-      console.log("returnLastImage:: ERROR: "+ex);
-      console.log(`returnLastImage:: ERROR: Passed uuid: ${uuid}`);
-      console.log(`returnLastImage:: ERROR: Passed place: ${place}`);
-      console.log(`returnLastImage:: ERROR: Passed list: ${list}`);
+      logging('returnlastimage', ex, 'error');
+      logging('returnlastimage', `Passed uuid: ${uuid}`, 'error');
+      logging('returnlastimage', `Passed place: ${place}`, 'error');
+      logging('returnlastimage', `Passed list: ${list}`, 'error');
       console.log(list);
-      console.log(`returnLastImage:: ERROR: Passed listLast: ${listLast}`);
+      logging('returnlastimage', `Passed listLast: ${listLast}`, 'error');
       console.log(listLast);
     }
 
   } else {
-    console.log("returnLastImage:: End of Image List...");
+    logging('returnlastimage', "End of Image List...", 'info');
     return "false";
   }
 }
@@ -175,7 +176,7 @@ function returnLastImage(place, uuid, list, listLast) {
 function returnNextImageV2(place, uuid, list, listNext) {
   // Because the method of working off pages and places has failed. Lets try this is maybe a simplier approach.
   if ( (parseInt(place) + 1)  < list.total) {
-    console.log("returnNextImageV2:: Within Bounds...");
+    logging('returnnextimagev2', "Within Bounds...");
 
     try {
       var tempLinkList = [];
@@ -183,34 +184,34 @@ function returnNextImageV2(place, uuid, list, listNext) {
         tempLinkList.push(list.media[index].link);
       });
       var curIndex = tempLinkList.findIndex(item => item === uuid);
-      console.log(`returnNextImageV2:: curIndex: ${curIndex}`);
+      logging('returnnextimagev2', `curIndex: ${curIndex}`);
       // The above should return the index position we are currently in.
       if (curIndex + 1 == list.media.length) {
         // This would mean we are at the last position available, and need to use listNext
-        console.log("returnNextImageV2:: Last Position: Use listNext...");
+        logging('returnnextimagev2', "Last Position: Use listNext...");
         let next = listNext.media[0].link;
-        console.log(`returnNextImageV2:: Next Declared: ${next}`);
+        logging('returnnextimagev2', `Next Declared: ${next}`);
         return next;
       } else {
         // This should mean we are somewhere within the total index.
-        console.log("returnNextImageV2:: Within Index Bounds...");
+        logging('returnnextimagev2', "Within Index Bounds...");
         let next = list.media[ curIndex + 1].link;
-        console.log(`returnNextImageV2:: Next declared: ${next}`);
+        logging('returnnextimagev2', `Next declared: ${next}`);
         return next;
       }
 
     } catch(ex) {
-      console.log("returnNextImageV2:: ERROR: " + ex);
-      console.log(`returnNextImageV2:: ERROR: Passed uuid: ${uuid}`);
-      console.log(`returnNextImageV2:: ERROR: Passed place: ${place}`);
-      console.log(`returnNextImageV2:: ERROR: Passed list: ${list}`);
+      logging('returnnextimagev2', ex, 'error');
+      logging('returnnextimagev2', `Passed uuid: ${uuid}`, 'error');
+      logging('returnnextimagev2', `Passed place: ${place}`, 'error');
+      logging('returnnextimagev2', `Passed list: ${list}`, 'error');
       console.log(list);
-      console.log(`returnNextImageV2:: ERROR: Passed listNext: ${listNext}`);
+      logging('returnnextimagev2', `Passed listNext: ${listNext}`, 'error');
       console.log(listNext);
     }
 
   } else {
-    console.log("returnNextImageV2:: Total amount of Items Seen.");
+    logging('returnnextimagev2', "Total amount of Items Seen.", 'info');
     return "false";
   }
 }
