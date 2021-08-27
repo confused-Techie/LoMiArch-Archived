@@ -2,7 +2,15 @@ import Layout from '../components/layout'
 import { TextInput, LabelGroup, Label, Link } from '@primer/components'
 import { SearchIcon } from '@primer/octicons-react'
 
-function HomePage() {
+export async function getServerSideProps(context) {
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/tags`);
+  const apiTag = await res.json();
+
+  return { props: { apiTag } };
+}
+
+function HomePage( { apiTag } ) {
 
   return (
     <>
@@ -12,12 +20,14 @@ function HomePage() {
         </div>
         <div class="dashboard_tag">
           <LabelGroup>
-            <Link href="#">
-              <Label>Default Label</Label>
-            </Link>
-            <Link href="#">
-              <Label sx={{bg: 'purple' }}>Testing Purple</Label>
-            </Link>
+            {apiTag.map((i, index) => (
+
+              <Link href={`/gallery/${i[0]}`}>
+                <Label sx={{bg: i[1] }}>{i[0]}</Label>
+              </Link>
+
+            ))}
+
           </LabelGroup>
         </div>
       </Layout>

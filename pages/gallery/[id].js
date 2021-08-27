@@ -13,17 +13,23 @@ export async function getServerSideProps(context) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/gallery/${id}?page=1`);
   const data = await res.json();
   const trunData = data.media;
-  return { props: { trunData} };
+
+  // check for first content request excedding return limit
+  var hasMoreTemp = true;
+  if (data.total < 10) {
+    hasMoreTemp = false;
+  }
+  return { props: { trunData, hasMoreTemp } };
 }
 
 
-const Gallery = ( { trunData } ) => {
+const Gallery = ( { trunData, hasMoreTemp } ) => {
   const router = useRouter();
   const { id } = router.query;
 
   var [items, setItems ] = useState( trunData );
   var [page, setPage ] = useState(2);
-  var [ hasMore, sethasMore ] = useState(true);
+  var [ hasMore, sethasMore ] = useState( hasMoreTemp );
 
   const fetchMoreData = () => {
     console.log("Items: ");
@@ -31,15 +37,18 @@ const Gallery = ( { trunData } ) => {
 
     setPage(page + 1);
     console.log("page: "+page);
-    fetch(`${process.env.NEXT_PUBLIC_API_HOST}/gallery/${id}?page=${page}`)
-      .then(response => response.json())
-      .then(data => {
-        setItems( items.concat(data.media));
-        if (items.length >= data.total) {
-          console.log("Total Items: "+data.total+" and total items shown: "+items.length+". Have resulted in hasMore to be false");
-          sethasMore(false);
-        }
-      });
+    if (!hasMore) {
+      // explicitly checking hasMore because of failures to recognize it when set to prevent double loading.
+      fetch(`${process.env.NEXT_PUBLIC_API_HOST}/gallery/${id}?page=${page}`)
+        .then(response => response.json())
+        .then(data => {
+          setItems( items.concat(data.media));
+          if (items.length >= data.total) {
+            console.log("Total Items: "+data.total+" and total items shown: "+items.length+". Have resulted in hasMore to be false");
+            sethasMore(false);
+          }
+        });
+    }
   };
 
 
