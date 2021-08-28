@@ -3,7 +3,7 @@ import Layout from '../../components/layout';
 import React, { useState, useCallback } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Image from 'next/image'
-import { Box } from '@primer/components'
+import { Box, Spinner } from '@primer/components'
 import Link from 'next/link'
 
 export async function getServerSideProps(context) {
@@ -37,7 +37,9 @@ const Gallery = ( { trunData, hasMoreTemp } ) => {
 
     setPage(page + 1);
     console.log("page: "+page);
-    if (!hasMore) {
+    console.log(`HasMore: ${hasMore}`);
+    //if (!hasMore) {
+      console.log("FetchMoreData executing...");
       // explicitly checking hasMore because of failures to recognize it when set to prevent double loading.
       fetch(`${process.env.NEXT_PUBLIC_API_HOST}/gallery/${id}?page=${page}`)
         .then(response => response.json())
@@ -48,8 +50,10 @@ const Gallery = ( { trunData, hasMoreTemp } ) => {
             sethasMore(false);
           }
         });
-    }
+    //}
   };
+
+
 
 
   return (
@@ -61,7 +65,7 @@ const Gallery = ( { trunData, hasMoreTemp } ) => {
           dataLength={items.length}
           next={fetchMoreData}
           hasMore={hasMore}
-          loader={<h4>Loading...</h4>}
+          loader={ <Spinner size="small" /> }
         >
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridGap: 0 }}>
           {items.map((i, index) => (
@@ -70,6 +74,16 @@ const Gallery = ( { trunData, hasMoreTemp } ) => {
                 <Link href={`/media/${id}?place=${index}&uuid=${i.link}`}>
                   <div style={{ position: 'relative', width: '100%', height: '400px'}} >
                     <Image src={`${process.env.NEXT_PUBLIC_API_HOST}${i.link}`} alt="Testing picture"  layout={"fill"} objectFit={"cover"} unoptimized={"true"}/>
+                    <div style={{ position: 'relative', position: 'absolute', top: '2px', right: '5px' }}>
+                      {i.type == 'image' &&
+                        <Image src='/camera.svg' alt='Content Definition' width='30' height='30' />
+                      }
+                      {i.type == 'video' &&
+                        <Image src='/video.svg' alt='Content Definition' width='30' height='30' />
+                      }
+
+
+                    </div>
                   </div>
                 </Link>
 

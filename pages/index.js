@@ -15,10 +15,10 @@ function HomePage( { apiTag } ) {
   return (
     <>
       <Layout>
-        <div class="dashboard_main">
+        <div className="dashboard_main">
           <TextInput width={1/2} variant="large" icon={SearchIcon} aria-label="Image-Search" name="Image-Search" placeholder="Search" />
         </div>
-        <div class="dashboard_tag">
+        <div className="dashboard_tag">
           <LabelGroup>
             {apiTag.map((i, index) => (
 

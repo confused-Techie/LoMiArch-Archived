@@ -35,8 +35,9 @@ const Media = ( { apiDataCur, apiDataLast, apiDataNext }) => {
   const dPress = useKeyPress("d");
   const aPress = useKeyPress("a");
   const escPress = useKeyPress("Escape");
+  const iPress = useKeyPress("i");
 
-  logging('media', `arrowRight: ${arrowRightPress} || arrowLeft: ${arrowLeftPress} || dPress: ${dPress} || aPress = ${aPress} || escPress = ${escPress}`);
+  logging('media', `arrowRight: ${arrowRightPress} || arrowLeft: ${arrowLeftPress} || dPress: ${dPress} || aPress = ${aPress} || escPress = ${escPress} || iPress = ${iPress}`);
 
   var currentPage = determinePage(place);
 
@@ -81,7 +82,15 @@ const Media = ( { apiDataCur, apiDataLast, apiDataNext }) => {
   if (arrowLeftPress || aPress) {
     if (lastStatus) {
       logging('media', "Attempting to Respond to ArrowLeft/KeyA...");
-      window.location.assign(`/media/${item}/?place=${parseInt(place)-1}&uuid=${lastHref}`);
+      window.location.assign(`/media/${item}?place=${parseInt(place)-1}&uuid=${lastHref}`);
+    }
+  }
+  if (iPress) {
+    logging('media', "Attempting to Respond to I Press...");
+    try {
+      router.push(`/contentInfo?uuid=${uuid}`);
+    } catch(ex) {
+      logging('media', `Informational Direct Failed: ${ex}`);
     }
   }
 
